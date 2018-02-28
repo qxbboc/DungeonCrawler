@@ -1,0 +1,22 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    display: flex;
+    /*Center horizontally*/
+    justify-content: center;
+    /*Center vertically. */
+    align-items: center;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+    background: black;
+}
+.size {
+    width: 50vw;
+    height: 50vh;
+}
