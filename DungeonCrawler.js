@@ -7,6 +7,8 @@ var inGame = true;
 var fps = 1000 / 30;
 var player;
 var moveStop;
+var textures;
+
 if(!setUp) setup();
 
 function setup(){
@@ -20,6 +22,30 @@ function setup(){
     document.addEventListener("keydown", keyDown, false);
     document.addEventListener("keyup", keyUp, false);
     document.addEventListener("click",mousePress,false);
+
+    //0 = NoWall, 1 = RightWall, 2 = LeftWall, 3 = TopWall, 4 = BottomWall, 5 = AllWall 6 = RightLeftWall,
+    // 7 = RightTopWall, 8 = RightBottomWall, 9 = LeftTopWall, 10 = LeftBottomWall, 11 = TopBottomWall
+    // 12 = RightTopBottomWall, 13 = LeftTopBottomWall, 14 = RightLeftTopWall, 15 = RightLeftBottomWall
+
+    textures = [
+        "assets/RockTexture.png",
+        "assets/RockTextureRightWall.png",
+        "assets/RockTextureLeftWall.png",
+        "assets/RockTextureTopWall.png",
+        "assets/RockTextureBottomWall.png",
+        "assets/RockTextureAllWall.png",
+        "assets/RockTextureRightLeftWall.png",
+        "assets/RockTextureRightTopWall.png",
+        "assets/RockTextureBottomRightWall.png",
+        "assets/RockTextureLeftTopWall.png",
+        "assets/RockTextureBottomLeftWall.png",
+        "assets/RockTextureTopBottomWall.png",
+        "assets/RockTextureRightTopBottomWall.png",
+        "assets/RockTextureLeftTopBottomWall.png",
+        "assets/RockTextureRightLeftTopWall.png",
+        "assets/RockTextureRightLeftBottomWall.png"
+    ];
+
     //Making Grid
     makeGrid();
     setUp = true;
@@ -110,6 +136,8 @@ function Cell(col, row){
     this.x = this.col * gridWidth;
     this.y = this.row * gridWidth;
     this.occupied = false;
+    this.texturePath = textures[0];
+
     //(this.col === this.row && this.row === 0) ? false : Math.random() < .2
     this.getNeighbors = function(){
         var neighbors = [];
@@ -136,9 +164,85 @@ function Cell(col, row){
 
     this.show = function(){
         var texture = new Image();
-        texture.src = "assets/RockTexture.png";
+        this.texturePath = this.decideTexture();
+        texture.src = this.texturePath;
         ctx.drawImage(texture, 0, 0, texture.width, texture.height,
             this.x,this.y,gridWidth,gridWidth);
+    };
+
+    this.decideTexture = function(){
+        //0 = NoWall, 1 = RightWall, 2 = LeftWall, 3 = TopWall, 4 = BottomWall, 5 = AllWall 6 = RightLeftWall,
+        // 7 = RightTopWall, 8 = RightBottomWall, 9 = LeftTopWall, 10 = LeftBottomWall, 11 = TopBottomWall
+        // 12 = RightTopBottomWall, 13 = LeftTopBottomWall, 14 = RightLeftTopWall, 15 = RightLeftBottomWall
+        var neighbors = this.getNeighbors();
+        var left = false;
+        var right = false;
+        var top = false;
+        var bottom = false;
+        for(var cell = 0; cell < neighbors.length; cell++){
+            if(neighbors[cell][0].occupied){
+                if(neighbors[cell][1][0] === -1){
+                    left = true;
+                }
+                if(neighbors[cell][1][0] === 1){
+                    right = true;
+                }
+                if(neighbors[cell][1][1] === 1){
+                    bottom = true;
+                }
+                if(neighbors[cell][1][1] === -1){
+                    top = true;
+                }
+            }
+        }
+        if(right && left && top && bottom){
+            return textures[0];
+        }
+        else if(left && top && bottom){
+            return textures[1];
+        }
+        else if(right && top && bottom){
+            return textures[2];
+        }
+        else if(left && right && bottom){
+            return textures[3];
+        }
+        else if(left && right && top){
+            return textures[4];
+        }
+        else if(top && bottom){
+            return textures[6];
+        }
+        else if(left && bottom){
+            return textures[7];
+        }
+        else if(left && top){
+            return textures[8];
+        }
+        else if(right && bottom){
+            return textures[9];
+        }
+        else if(right && top){
+            return textures[10];
+        }
+        else if(right && left){
+            return textures[11];
+        }
+        else if(left){
+            return textures[12];
+        }
+        else if(right){
+            return textures[13];
+        }
+        else if(bottom){
+            return textures[14];
+        }
+        else if(top){
+            return textures[15];
+        }
+        else{
+            return textures[5];
+        }
     };
 }
 
